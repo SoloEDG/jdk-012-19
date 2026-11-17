@@ -1,7 +1,12 @@
-import { Heart, Download, ArrowUpRight } from "lucide-react";
+import { Heart, Download, ArrowUpRight, Clock3 } from "lucide-react";
 import type { GalleryDocument } from "../../../shared/types";
 import { artworkById } from "../../../shared/catalog";
-import { recapStats, createRecap } from "../lib/recap";
+import {
+  recapStats,
+  createRecap,
+  realDwellSeconds,
+  tourSummaries,
+} from "../lib/recap";
 import { downloadRecap } from "../lib/download";
 export function CollectionPanel({
   document,
@@ -15,6 +20,7 @@ export function CollectionPanel({
   onToggle: (id: string) => void;
 }) {
   const stats = recapStats(document);
+  const tours = tourSummaries(document);
   return (
     <div className="collection-panel">
       <div className="eyebrow">YOUR PERSONAL GALLERY</div>
@@ -27,9 +33,30 @@ export function CollectionPanel({
           <strong>{stats.saved}</strong>已收藏
         </span>
         <span>
-          <strong>{Math.floor(stats.seconds / 60)}′</strong>停留时长
+          <strong>{Math.floor(stats.seconds / 60)}′</strong>实际停留
         </span>
       </div>
+      {tours.length > 0 && (
+        <section className="tour-history">
+          <div className="eyebrow">GUIDED VISITS · 导览记录</div>
+          {tours.map((t, i) => (
+            <div className="tour-history-row" key={i}>
+              <strong>{t.name}</strong>
+              <small>
+                {t.record.completed ? "完成" : "中途结束"} · {t.stops} 站 · 实际停留{" "}
+                {t.dwellSeconds} 秒
+              </small>
+              <small className={t.overrunSeconds > 0 ? "overrun" : ""}>
+                <Clock3 size={11} />
+                原计划 {t.plannedSeconds} 秒 · 实际 {t.actualSeconds} 秒
+                {t.overrunSeconds > 0
+                  ? ` · 多留了 ${t.overrunSeconds} 秒`
+                  : ""}
+              </small>
+            </div>
+          ))}
+        </section>
+      )}
       {document.favorites.length === 0 ? (
         <div className="empty">
           <Heart size={28} />
@@ -47,7 +74,7 @@ export function CollectionPanel({
                 <ArrowUpRight size={15} />
               </button>
               <small>
-                {a.artist} · {a.year}
+                {a.artist} · {a.year} · 实际停留 {realDwellSeconds(document, id)} 秒
               </small>
               <textarea
                 aria-label={"感想-" + a.title}
@@ -65,7 +92,7 @@ export function CollectionPanel({
       )}
       <button
         className="primary full"
-        disabled={!stats.saved}
+        disabled={!stats.saved && !tours.length}
         onClick={() => downloadRecap(createRecap(document))}
       >
         <Download size={16} />

@@ -1,3 +1,3 @@
-export { useTour } from "./model/useTour";
+export { useTour, isTourActive } from "./model/useTour";
 export { TourPanel } from "./ui/TourPanel";
-export { tourTarget } from "./lib/routeProgress";
+export { tourTarget, tourTiming, tourProgress } from "./lib/routeProgress";

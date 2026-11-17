@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import type { Point } from "../../../shared/types";
 import { approach, constrain } from "../lib/motion";
-export function useWalker(onPosition: (p: Point) => void) {
+export function useWalker(
+  onPosition: (p: Point) => void,
+  onManualMove?: () => void,
+) {
   const [position, setPosition] = useState<Point>({ x: 3, z: 6.5 });
   const positionRef = useRef(position);
   const target = useRef<Point | null>(null);
@@ -9,6 +12,8 @@ export function useWalker(onPosition: (p: Point) => void) {
   const yaw = useRef(0);
   const callback = useRef(onPosition);
   callback.current = onPosition;
+  const manual = useRef(onManualMove);
+  manual.current = onManualMove;
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement).closest("input,textarea,select")) return;
@@ -25,8 +30,11 @@ export function useWalker(onPosition: (p: Point) => void) {
         ].includes(e.key.toLowerCase())
       ) {
         e.preventDefault();
+        const first = !keys.current.has(e.key.toLowerCase());
         keys.current.add(e.key.toLowerCase());
         target.current = null;
+        // A real key press means the visitor takes over walking themselves.
+        if (first) manual.current?.();
       }
     };
     const up = (e: KeyboardEvent) => keys.current.delete(e.key.toLowerCase());

@@ -113,11 +113,16 @@ export default function App() {
           )}
           <TourPanel
             state={g.tour.state}
-            onStart={g.tour.start}
+            now={g.now}
+            currentElapsed={g.narration.state.elapsed}
+            onStart={g.startTour}
             onPause={g.pauseTour}
-            onResume={g.tour.resume}
+            onResume={g.resumeTour}
             onStop={g.stopTour}
             onNext={g.nextTour}
+            onRejoin={g.rejoinTour}
+            onExtend={g.tour.extend}
+            onTighten={g.tour.tighten}
           />
           <div className="sidebar-footer">
             <Compass size={15} />
@@ -146,7 +151,9 @@ export default function App() {
             <div className="scene-top">
               <span>
                 <span className="live-dot" />
-                自由探索中
+                {g.tour.active || g.tour.state.phase === "done"
+                  ? "主题导览中"
+                  : "自由探索中"}
               </span>
               <button
                 className="glass-button"
@@ -166,9 +173,13 @@ export default function App() {
               <MapPin size={15} />
               {g.catalog.nearby ? a?.title : "万物之间 · 主展厅"}
               <small>
-                {g.catalog.nearby
-                  ? "靠近作品 · 可收听讲解"
-                  : "拖动视角，发现你的下一次共鸣"}
+                {g.tour.state.phase === "left"
+                  ? "你离开了这一站 · 可随时回到这一站继续"
+                  : g.tour.state.phase === "awaiting"
+                    ? "讲解结束 · 由你决定何时前往下一站"
+                    : g.catalog.nearby
+                      ? "靠近作品 · 可收听讲解"
+                      : "拖动视角，发现你的下一次共鸣"}
               </small>
             </div>
             <div
@@ -219,7 +230,7 @@ export default function App() {
             </div>
             <button
               onClick={() => {
-                g.tour.start("nature");
+                g.startTour("nature");
                 setTab("journeys");
               }}
             >
@@ -252,11 +263,16 @@ export default function App() {
               </div>
               <TourPanel
                 state={g.tour.state}
-                onStart={g.tour.start}
+                now={g.now}
+                currentElapsed={g.narration.state.elapsed}
+                onStart={g.startTour}
                 onPause={g.pauseTour}
-                onResume={g.tour.resume}
+                onResume={g.resumeTour}
                 onStop={g.stopTour}
                 onNext={g.nextTour}
+                onRejoin={g.rejoinTour}
+                onExtend={g.tour.extend}
+                onTighten={g.tour.tighten}
               />
             </>
           ) : (
@@ -269,7 +285,7 @@ export default function App() {
                 if (g.catalog.active) g.collection.toggle(g.catalog.active);
               }}
               onListen={() => {
-                if (g.catalog.active) g.narration.play(g.catalog.active);
+                if (g.catalog.active) g.listen(g.catalog.active);
               }}
               onGo={() => {
                 if (g.catalog.active) g.go(g.catalog.active);
@@ -296,7 +312,7 @@ export default function App() {
         state={g.narration.state}
         caption={g.narration.caption}
         supported={g.narration.supported}
-        onToggle={g.narration.toggle}
+        onToggle={g.toggleNarration}
         onSeek={g.narration.seek}
         onRate={g.narration.rate}
       />
@@ -334,7 +350,13 @@ export default function App() {
                   点击画中的作品或左侧列表，自动前往。靠近作品后，右侧切换介绍。
                 </p>
                 <p>
-                  主题导览会带你依次前往作品并开始讲解。收藏喜欢的作品，在“我的收藏”写下感想并下载参观回顾。
+                  主题导览会带你依次前往作品并开始讲解。抵达后会先让你看一会儿再开始讲解；讲解结束会停在这一站，由你确认后再前往下一站。
+                </p>
+                <p>
+                  想看久一点，就慢慢看——预计结束时间会随之顺延，并提前告诉你会晚多少。若想保持原定时间，可选择压缩后续讲解；正在听的这一段不会被截断。
+                </p>
+                <p>
+                  中途走开不会被拉回：这一站会记着你听到的位置，回到这一站即可继续。收藏喜欢的作品，在“我的收藏”写下感想并下载参观回顾。
                 </p>
                 <p>
                   讲解由设备的中文语音合成播放；没有中文语音时仍可阅读同步字幕。

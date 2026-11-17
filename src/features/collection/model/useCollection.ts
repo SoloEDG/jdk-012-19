@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { loadDocument, saveDocument } from "../../../shared/storage";
 import { artworkById } from "../../../shared/catalog";
+import type { TourRecord } from "../../../shared/types";
 export function useCollection() {
   const [document, setDocument] = useState(loadDocument);
   const [storageError, setStorageError] = useState(false);
@@ -33,5 +34,11 @@ export function useCollection() {
         };
       });
     },
+    /**
+     * Store what a tour visit really was: actual dwell per stop, which stops
+     * the visitor confirmed, and how long it ran — not the original estimate.
+     */
+    recordTour: (record: TourRecord) =>
+      setDocument((d) => ({ ...d, tours: [...d.tours, record] })),
   };
 }

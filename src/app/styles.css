@@ -750,10 +750,117 @@ kbd {
   line-height: 1.8;
   color: #a3b290;
 }
+.tour-phase {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 11px 0 6px;
+  color: #cfc7a4 !important;
+}
+.phase-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8d9a78;
+  flex-shrink: 0;
+}
+.phase-dot.phase-arrived,
+.phase-dot.phase-attending {
+  background: #b9c98f;
+  box-shadow: 0 0 0 3px #b9c98f22;
+}
+.phase-dot.phase-listening {
+  background: #d8c492;
+  animation: phase-pulse 1.8s ease-in-out infinite;
+}
+.phase-dot.phase-awaiting {
+  background: #cbb47c;
+  box-shadow: 0 0 0 3px #cbb47c33;
+}
+.phase-dot.phase-left {
+  background: #9a7d5f;
+}
+.phase-dot.phase-done {
+  background: #a9bb84;
+}
+@keyframes phase-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.tour-timing {
+  border-top: 1px solid #46503b;
+  margin-top: 12px;
+  padding-top: 10px;
+}
+.timing-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0 0 6px !important;
+  font-size: 10px;
+  color: #b4be9d !important;
+  font-variant-numeric: tabular-nums;
+}
+.timing-row svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #b9ac81;
+}
+.timing-row small {
+  color: #85927c;
+  font-size: 9px;
+}
+.timing-note {
+  margin: 8px 0 0 !important;
+  font-size: 9.5px !important;
+  color: #b0a084 !important;
+  background: #33301f;
+  border-left: 2px solid #9c8656;
+  padding: 7px 8px;
+}
+.timing-note.urgent {
+  color: #e0cfa3 !important;
+  border-left-color: #cfb57d;
+  background: #3b3524;
+}
+.pace-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 9px;
+}
+.pace-choice button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 10px;
+  padding: 8px 6px;
+  border: 1px solid #6a745c;
+  color: #d3cfa8;
+  background: #333d2b;
+}
+.pace-choice button:last-child {
+  border-color: #514b39;
+  background: transparent;
+  color: #b3b49a;
+}
+.pace-choice button:hover {
+  border-color: #cfb57d;
+}
+.tour-done {
+  color: #b7c39b !important;
+}
 .tour-controls {
   display: flex;
   gap: 10px;
   justify-content: space-between;
+}
+.current-tour .tour-controls {
+  margin-top: 14px;
+  border-top: 1px solid #46503b;
+  padding-top: 12px;
 }
 .tour-controls button {
   display: flex;
@@ -820,6 +927,35 @@ kbd {
   color: #95a17f;
   margin: 8px 0;
   font-size: 9px;
+}
+.tour-history {
+  padding: 18px 0;
+  border-bottom: 1px solid #3c4732;
+}
+.tour-history-row {
+  padding: 11px 0;
+  border-top: 1px solid #333c2b;
+}
+.tour-history-row:first-of-type {
+  border-top: 0;
+}
+.tour-history-row strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: #d3c6a1;
+  margin-bottom: 6px;
+}
+.tour-history-row small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  color: #93a07e;
+  line-height: 1.7;
+}
+.tour-history-row small.overrun {
+  color: #c2a875;
 }
 textarea {
   width: 100%;
